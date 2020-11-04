@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SE2 Assignment 1: Online Library</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+  </head>
+  <body>
+    <h1>SE2 Library</h1>
+
+    <!-- ID -->
+    <div class="container">
+      {{range .Library.Row}}
+      <div class="row ">
+        {{.Key}}
+      </div>
+      <!-- Document -->
+      {{range .Cell}}
+      <div class="row ">
+        <div class="col s4">{{.Column}}</div>
+
+        <div class="col s4">{{.Value}}</div>
+
+        <div class="col s4">{{.Time}}</div>
+      </div>
+      {{end}}
+      <div class="divider"></div>
+      {{end}}
+    </div>
+    <br />
+    proudly served by {{.Hostname}}
+  </body>
+</html>

@@ -1,0 +1,68 @@
+version: "2.3"
+services:
+  nginx:
+    build: ./nginx
+    networks:
+      - se_backend
+    depends_on:
+      hbase:
+        condition: service_healthy
+      grproxy:
+        condition: service_started
+      gserve1:
+        condition: service_started
+      gserve2:
+        condition: service_started
+  grproxy:
+    build: ./grproxy
+    networks:
+      - se_frontend
+      - se_backend
+    ports:
+      - "80:8080"
+    depends_on:
+      hbase:
+        condition: service_healthy
+  hbase:
+    build: ./hbase
+    ports:
+      - "2181:2181"
+      - "8080:8080"
+    networks:
+      se_backend:
+        aliases:
+          - zookeeper
+    healthcheck:
+      test: ["CMD", "hbase", "hbck"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+  gserve1:
+    build: ./gserve
+    networks:
+      - se_backend
+    environment:
+      - host_name=gserve1
+    depends_on:
+      hbase:
+        condition: service_healthy
+      grproxy:
+        condition: service_started
+  gserve2:
+    build: ./gserve
+    networks:
+      - se_backend
+    environment:
+      - host_name=gserve2
+    depends_on:
+      hbase:
+        condition: service_healthy
+      grproxy:
+        condition: service_started
+
+networks:
+  se_backend:
+    driver: bridge
+  se_frontend:
+    driver: bridge
